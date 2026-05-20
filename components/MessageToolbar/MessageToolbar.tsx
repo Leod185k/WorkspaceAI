@@ -3,7 +3,6 @@ type MessageToolbarProps = {
   excludedFromContext: boolean;
   onCollapse?: () => void;
   onCopy: () => void;
-  onDelete: () => void;
   onExclude: (excludedFromContext: boolean) => void;
 };
 
@@ -12,14 +11,10 @@ export function MessageToolbar({
   excludedFromContext,
   onCollapse,
   onCopy,
-  onDelete,
   onExclude,
 }: MessageToolbarProps) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      <button className="toolbar-button danger" onClick={onDelete} type="button">
-        Delete
-      </button>
       <button className="toolbar-button" onClick={onCopy} type="button">
         Copy
       </button>

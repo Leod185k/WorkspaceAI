@@ -5,7 +5,6 @@ type SidebarProps = {
   activeConversationId: string;
   conversations: Conversation[];
   onCreate: () => void;
-  onDelete: (conversationId: string) => void;
   onRename: (conversationId: string, title: string) => void;
   onSelect: (conversationId: string) => void;
   search: string;
@@ -18,7 +17,6 @@ export function Sidebar({
   activeConversationId,
   conversations,
   onCreate,
-  onDelete,
   onRename,
   onSelect,
   search,
@@ -83,13 +81,6 @@ export function Sidebar({
                   type="button"
                 >
                   Rename
-                </button>
-                <button
-                  className="mini-button danger"
-                  onClick={() => onDelete(conversation.id)}
-                  type="button"
-                >
-                  Delete
                 </button>
               </div>
             </div>

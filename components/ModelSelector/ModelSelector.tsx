@@ -8,10 +8,11 @@ type ModelSelectorProps = {
 
 export function ModelSelector({ modelId, models, onChange }: ModelSelectorProps) {
   return (
-    <label className="model-selector flex h-9 items-center gap-2 rounded-lg border px-2 text-xs">
-      Model
+    <label className="model-selector flex h-9 shrink-0 items-center gap-2 rounded-lg border px-2 text-xs">
+      <span className="hidden sm:inline">Model</span>
+      <span className="sm:hidden">AI</span>
       <select
-        className="max-w-32 bg-transparent text-sm text-[color:var(--text)] outline-none"
+        className="model-select max-w-28 appearance-none bg-transparent pr-4 text-sm outline-none"
         onChange={(event) => onChange(event.target.value)}
         value={modelId}
       >
@@ -21,6 +22,9 @@ export function ModelSelector({ modelId, models, onChange }: ModelSelectorProps)
           </option>
         ))}
       </select>
+      <span className="select-chevron" aria-hidden="true">
+        v
+      </span>
     </label>
   );
 }

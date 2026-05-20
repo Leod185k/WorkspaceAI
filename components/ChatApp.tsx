@@ -15,9 +15,10 @@ import {
 } from "@/lib/chat-data";
 
 type Theme = "light" | "dark";
+type ViewMode = "home" | "new" | "conversation";
 
 const demoResponse =
-  "Here is a first pass.\n\nI would start by separating the work into three tracks: what needs to be decided, what needs to be built, and what needs to be verified. That keeps planning concrete while still leaving room for discovery.\n\nA practical structure:\n\n- Define the goal and constraints.\n- List the unknowns that could change the approach.\n- Pick the smallest useful implementation slice.\n- Add checks for the behavior that matters most.\n- Keep notes on decisions that may need to be revisited.\n\n```ts\nconst nextContext = messages.filter((message) => {\n  return !message.deleted && !message.excludedFromContext;\n});\n```\n\nFor the next step, I would choose one slice and turn it into a short implementation checklist with acceptance criteria.";
+  "Here is a first pass.\n\nI would start by separating the work into three tracks: what needs to be decided, what needs to be built, and what needs to be verified. That keeps planning concrete while still leaving room for discovery.\n\nA practical structure:\n\n- Define the goal and constraints.\n- List the unknowns that could change the approach.\n- Pick the smallest useful implementation slice.\n- Add checks for the behavior that matters most.\n- Keep notes on decisions that may need to be revisited.\n\n```ts\nconst nextContext = messages.filter((message) => {\n  return !message.excludedFromContext;\n});\n```\n\nFor the next step, I would choose one slice and turn it into a short implementation checklist with acceptance criteria.";
 
 export function ChatApp() {
   const [conversations, setConversations] = useState<Conversation[]>(seedConversations);
@@ -26,14 +27,35 @@ export function ChatApp() {
   const [selectedModelId, setSelectedModelId] = useState(models[0].id);
   const [search, setSearch] = useState("");
   const [theme, setTheme] = useState<Theme>("dark");
+  const [viewMode, setViewMode] = useState<ViewMode>("home");
+  const [hideExcluded, setHideExcluded] = useState(false);
   const streamTimerRef = useRef<number | null>(null);
 
   const activeMessages = useMemo(
     () =>
-      messages.filter(
-        (message) => message.conversationId === activeConversationId && !message.deleted,
-      ),
-    [activeConversationId, messages],
+      messages.filter((message) => {
+        if (message.conversationId !== activeConversationId) {
+          return false;
+        }
+
+        if (hideExcluded && message.excludedFromContext) {
+          return false;
+        }
+
+        return true;
+      }),
+    [activeConversationId, hideExcluded, messages],
+  );
+
+  const hiddenExcludedCount = useMemo(
+    () =>
+      hideExcluded
+        ? messages.filter(
+            (message) =>
+              message.conversationId === activeConversationId && message.excludedFromContext,
+          ).length
+        : 0,
+    [activeConversationId, hideExcluded, messages],
   );
 
   const contextMessages = useMemo(
@@ -66,22 +88,22 @@ export function ChatApp() {
 
   function handleNewConversation() {
     setActiveConversationId("");
+    setViewMode("new");
+  }
+
+  function handleHome() {
+    setActiveConversationId("");
+    setViewMode("home");
+  }
+
+  function handleSelectConversation(conversationId: string) {
+    setActiveConversationId(conversationId);
+    setViewMode("conversation");
   }
 
   function handleRenameConversation(conversationId: string, title: string) {
     const cleanTitle = title.trim() || "Untitled chat";
     touchConversation(conversationId, cleanTitle);
-  }
-
-  function handleDeleteConversation(conversationId: string) {
-    setConversations((current) => {
-      const next = current.filter((conversation) => conversation.id !== conversationId);
-      if (conversationId === activeConversationId) {
-        setActiveConversationId(next[0]?.id ?? "");
-      }
-      return next;
-    });
-    setMessages((current) => current.filter((message) => message.conversationId !== conversationId));
   }
 
   function updateMessage(messageId: string, patch: Partial<Message>) {
@@ -106,6 +128,7 @@ export function ChatApp() {
 
       setConversations((current) => [conversation, ...current]);
       setActiveConversationId(conversationId);
+      setViewMode("conversation");
     }
 
     const userMessage: Message = {
@@ -114,7 +137,6 @@ export function ChatApp() {
       role: "user",
       content,
       collapsed: false,
-      deleted: false,
       excludedFromContext: false,
       createdAt,
     };
@@ -127,7 +149,6 @@ export function ChatApp() {
       model: selectedModel.label,
       content: "",
       collapsed: false,
-      deleted: false,
       excludedFromContext: false,
       createdAt: new Date().toISOString(),
       streaming: true,
@@ -168,9 +189,8 @@ export function ChatApp() {
         activeConversationId={activeConversationId}
         conversations={conversations}
         onCreate={handleNewConversation}
-        onDelete={handleDeleteConversation}
         onRename={handleRenameConversation}
-        onSelect={setActiveConversationId}
+        onSelect={handleSelectConversation}
         search={search}
         setSearch={setSearch}
         theme={theme}
@@ -179,17 +199,19 @@ export function ChatApp() {
       <main className="flex min-w-0 flex-1 flex-col">
         <ChatArea
           contextCount={contextMessages.length}
+          hiddenExcludedCount={hiddenExcludedCount}
+          hideExcluded={hideExcluded}
           messages={activeMessages}
           onCollapse={(messageId) => updateMessage(messageId, { collapsed: true })}
-          onDelete={(messageId) => updateMessage(messageId, { deleted: true })}
           onExclude={(messageId, excludedFromContext) =>
             updateMessage(messageId, { excludedFromContext })
           }
           onExpand={(messageId) => updateMessage(messageId, { collapsed: false })}
-          onHome={handleNewConversation}
-          onStartPrompt={handleSend}
+          onHome={handleHome}
+          onToggleHideExcluded={() => setHideExcluded((current) => !current)}
           theme={theme}
           toggleTheme={() => setTheme((current) => (current === "dark" ? "light" : "dark"))}
+          viewMode={viewMode}
         />
         <InputBar
           modelId={selectedModelId}

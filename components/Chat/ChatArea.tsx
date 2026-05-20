@@ -4,40 +4,36 @@ import { Message } from "@/lib/chat-data";
 
 type ChatAreaProps = {
   contextCount: number;
+  hiddenExcludedCount: number;
+  hideExcluded: boolean;
   messages: Message[];
   onCollapse: (messageId: string) => void;
-  onDelete: (messageId: string) => void;
   onExclude: (messageId: string, excludedFromContext: boolean) => void;
   onExpand: (messageId: string) => void;
   onHome: () => void;
-  onStartPrompt: (prompt: string) => void;
+  onToggleHideExcluded: () => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
+  viewMode: "home" | "new" | "conversation";
 };
-
-const starterPrompts = [
-  "Summarize a document",
-  "Draft an email",
-  "Plan a project",
-  "Explain code",
-  "Brainstorm ideas",
-  "Review notes",
-];
 
 export function ChatArea({
   contextCount,
+  hiddenExcludedCount,
+  hideExcluded,
   messages,
   onCollapse,
-  onDelete,
   onExclude,
   onExpand,
   onHome,
-  onStartPrompt,
+  onToggleHideExcluded,
   theme,
   toggleTheme,
+  viewMode,
 }: ChatAreaProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const showHome = messages.length === 0;
+  const showHome = viewMode === "home";
+  const showNewChat = viewMode === "new" && messages.length === 0;
 
   return (
     <section className="flex min-h-0 flex-1 flex-col">
@@ -50,7 +46,7 @@ export function ChatArea({
           >
             Workspace AI
           </button>
-          <p className="text-xs text-[color:var(--muted)]">New chat</p>
+          <p className="text-xs text-[color:var(--muted)]">Workspace</p>
         </div>
         <div className="relative flex items-center gap-2">
           <button
@@ -63,6 +59,15 @@ export function ChatArea({
           <div className="stat-pill rounded-md border px-2 py-1 text-xs">
             {contextCount} in context
           </div>
+          <button
+            className={`secondary-button h-8 rounded-md px-2 text-xs transition ${
+              hideExcluded ? "is-active" : ""
+            }`}
+            onClick={onToggleHideExcluded}
+            type="button"
+          >
+            {hideExcluded ? `Show Excluded${hiddenExcludedCount ? ` (${hiddenExcludedCount})` : ""}` : "Hide Excluded"}
+          </button>
           {settingsOpen ? (
             <div className="settings-popover settings-panel absolute right-0 top-10 z-10 w-48 rounded-lg border p-2 shadow-lg md:hidden">
               <div className="mb-2 text-xs font-medium text-[color:var(--muted)]">
@@ -81,28 +86,9 @@ export function ChatArea({
       </header>
       <div className="chat-scroll min-h-0 flex-1 overflow-y-auto px-3 py-5 sm:px-6">
         {showHome ? (
-          <div className="home-panel mx-auto flex min-h-full w-full max-w-3xl flex-col justify-center py-10">
-            <div className="mb-8">
-              <p className="mb-3 text-sm font-medium text-[color:var(--muted-strong)]">
-                Start here
-              </p>
-              <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-[color:var(--text)] sm:text-4xl">
-                What are we working on?
-              </h2>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {starterPrompts.map((prompt) => (
-                <button
-                  className="starter-card rounded-xl border p-3 text-left text-sm leading-5 transition"
-                  key={prompt}
-                  onClick={() => onStartPrompt(prompt)}
-                  type="button"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </div>
+          <EmptyChatState title="What are we working on?" />
+        ) : showNewChat ? (
+          <EmptyChatState title="What are we working on?" />
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-2.5">
             {messages.map((message) => (
@@ -110,7 +96,6 @@ export function ChatArea({
                 key={message.id}
                 message={message}
                 onCollapse={onCollapse}
-                onDelete={onDelete}
                 onExclude={onExclude}
                 onExpand={onExpand}
               />
@@ -119,5 +104,18 @@ export function ChatArea({
         )}
       </div>
     </section>
+  );
+}
+
+function EmptyChatState({ title }: { title: string }) {
+  return (
+    <div className="home-panel mx-auto flex min-h-full w-full max-w-3xl flex-col items-center justify-center py-10 text-center">
+      <div className="workspace-mark mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border text-lg font-semibold">
+        W
+      </div>
+      <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-[color:var(--text)] sm:text-4xl">
+        {title}
+      </h2>
+    </div>
   );
 }
