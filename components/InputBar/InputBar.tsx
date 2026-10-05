@@ -1,15 +1,10 @@
 import { FormEvent, KeyboardEvent, useState } from "react";
-import { ModelSelector } from "@/components/ModelSelector/ModelSelector";
-import { ModelOption } from "@/lib/chat-data";
 
 type InputBarProps = {
-  modelId: string;
-  models: ModelOption[];
-  onModelChange: (modelId: string) => void;
   onSend: (content: string) => void;
 };
 
-export function InputBar({ modelId, models, onModelChange, onSend }: InputBarProps) {
+export function InputBar({ onSend }: InputBarProps) {
   const [value, setValue] = useState("");
 
   function submit(event?: FormEvent) {
@@ -45,11 +40,10 @@ export function InputBar({ modelId, models, onModelChange, onSend }: InputBarPro
           className="max-h-36 min-h-9 flex-1 resize-none bg-transparent px-1 py-2 text-sm leading-5 text-[color:var(--text)] outline-none placeholder:text-[color:var(--muted)]"
           onChange={(event) => setValue(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Message the selected model..."
+          placeholder="Message Workspace AI..."
           rows={1}
           value={value}
         />
-        <ModelSelector modelId={modelId} models={models} onChange={onModelChange} />
         <button
           className="send-button h-9 rounded-lg px-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!value.trim()}

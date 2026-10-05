@@ -6,6 +6,7 @@ type SidebarProps = {
   conversations: Conversation[];
   onCreate: () => void;
   onRename: (conversationId: string, title: string) => void;
+  onDelete: (conversationId: string) => void;
   onSelect: (conversationId: string) => void;
   search: string;
   setSearch: (value: string) => void;
@@ -18,12 +19,15 @@ export function Sidebar({
   conversations,
   onCreate,
   onRename,
+  onDelete,
   onSelect,
   search,
   setSearch,
   theme,
   toggleTheme,
 }: SidebarProps) {
+  const [renamingConversationId, setRenamingConversationId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const filteredConversations = conversations.filter((conversation) =>
     conversation.title.toLowerCase().includes(search.toLowerCase()),
@@ -75,14 +79,25 @@ export function Sidebar({
                 </span>
               </button>
               <div className="mt-2 flex gap-1 opacity-0 transition group-hover:opacity-100">
-                <button
-                  className="mini-button"
-                  onClick={() => onRename(conversation.id, window.prompt("Rename chat", conversation.title) ?? conversation.title)}
-                  type="button"
-                >
-                  Rename
-                </button>
-              </div>
+  <button
+    className="mini-button"
+  onClick={() => {
+    setRenamingConversationId(conversation.id);
+    setRenameValue(conversation.title);
+  }}
+  type="button"
+>
+  Rename
+  </button>
+
+  <button
+    className="mini-button"
+    onClick={() => onDelete(conversation.id)}
+    type="button"
+  >
+    Delete
+  </button>
+</div>
             </div>
           );
         })}
@@ -108,6 +123,59 @@ export function Sidebar({
           </div>
         ) : null}
       </div>
+      {renamingConversationId ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="settings-panel w-[320px] rounded-lg border p-4 shadow-lg">
+            <h2 className="mb-3 text-sm font-medium">Rename chat</h2>
+
+            <input
+              autoFocus
+              className="field-surface h-9 w-full rounded-md border px-3 text-sm outline-none"
+              onChange={(event) => setRenameValue(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  const title = renameValue.trim();
+
+                  if (title) {
+                    onRename(renamingConversationId, title);
+                    setRenamingConversationId(null);
+                  }
+                }
+
+                if (event.key === "Escape") {
+                  setRenamingConversationId(null);
+                }
+              }}
+              value={renameValue}
+            />
+
+            <div className="mt-3 flex justify-end gap-2">
+              <button
+                className="secondary-button h-8 rounded-md px-3 text-sm"
+                onClick={() => setRenamingConversationId(null)}
+                type="button"
+              >
+                Cancel
+              </button>
+
+              <button
+                className="primary-soft-button h-8 rounded-md px-3 text-sm"
+                onClick={() => {
+                  const title = renameValue.trim();
+
+                  if (title) {
+                    onRename(renamingConversationId, title);
+                    setRenamingConversationId(null);
+                  }
+                }}
+                type="button"
+              >
+                Rename
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </aside>
   );
 }

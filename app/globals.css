@@ -20,7 +20,6 @@
   --accent: #c8b58a;
   --accent-strong: #eadbb8;
   --accent-text: #211a10;
-  --warning: #b27627;
   --code-bg: #111111;
   --scrollbar-track: rgba(255, 255, 255, 0.035);
   --scrollbar-thumb: rgba(255, 255, 255, 0.18);
@@ -46,7 +45,6 @@
   --accent: #6f5f43;
   --accent-strong: #4f422c;
   --accent-text: #fffaf0;
-  --warning: #b27627; 
   --code-bg: #eee8dc;
   --scrollbar-track: rgba(61, 52, 39, 0.045);
   --scrollbar-thumb: rgba(61, 52, 39, 0.22);
@@ -151,46 +149,10 @@ button:disabled {
   color: var(--text);
 }
 
-.model-badge,
-.stat-pill,
-.model-selector {
+.model-badge {
   border-color: var(--border);
   background: color-mix(in srgb, var(--surface-soft) 72%, transparent);
   color: var(--muted-strong);
-}
-
-.model-selector {
-  position: relative;
-  min-width: 8.5rem;
-}
-
-.model-select {
-  color: var(--text);
-  cursor: pointer;
-  min-width: 4.9rem;
-}
-
-.model-select option {
-  background: var(--surface-raised);
-  color: var(--text);
-}
-
-.select-chevron {
-  color: var(--muted);
-  font-size: 0.65rem;
-  line-height: 1;
-  margin-left: -0.85rem;
-  pointer-events: none;
-}
-
-.status-badge.warning {
-  background: color-mix(in srgb, var(--warning) 16%, transparent);
-  color: var(--warning);
-}
-
-.status-badge.streaming {
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  color: var(--accent-strong);
 }
 
 .conversation-item,
@@ -235,12 +197,6 @@ button:disabled {
 .toolbar-button:hover {
   background: var(--hover);
   color: var(--text);
-}
-
-.secondary-button.is-active {
-  border-color: color-mix(in srgb, var(--warning) 38%, transparent);
-  background: color-mix(in srgb, var(--warning) 13%, transparent);
-  color: var(--warning);
 }
 
 .mini-button {
@@ -294,24 +250,6 @@ button:disabled {
     border-color 140ms ease;
 }
 
-.toolbar-button.is-active {
-  border-color: color-mix(in srgb, var(--warning) 38%, transparent);
-  background: color-mix(in srgb, var(--warning) 13%, transparent);
-  color: var(--warning);
-}
-
-.message-excluded {
-  color: color-mix(in srgb, var(--warning) 78%, var(--text));
-}
-
-.message-excluded .markdown-compact,
-.message-excluded .whitespace-pre-wrap,
-.message-excluded p,
-.message-excluded li,
-.message-excluded td {
-  color: color-mix(in srgb, var(--warning) 78%, var(--text));
-}
-
 .inline-code {
   background: color-mix(in srgb, var(--code-bg) 86%, transparent);
   color: var(--accent-strong);
@@ -338,9 +276,4 @@ th.markdown-cell {
 
 .markdown-compact > :last-child {
   margin-bottom: 0;
-}
-.message-excluded {
-  color: var(--warning);
-  border-color: var(--warning);
-  opacity: 0.9;
 }

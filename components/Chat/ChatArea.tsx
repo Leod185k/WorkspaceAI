@@ -3,30 +3,20 @@ import { MessageCard } from "@/components/Message/MessageCard";
 import { Message } from "@/lib/chat-data";
 
 type ChatAreaProps = {
-  contextCount: number;
-  hiddenExcludedCount: number;
-  hideExcluded: boolean;
   messages: Message[];
   onCollapse: (messageId: string) => void;
-  onExclude: (messageId: string, excludedFromContext: boolean) => void;
   onExpand: (messageId: string) => void;
   onHome: () => void;
-  onToggleHideExcluded: () => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
   viewMode: "home" | "new" | "conversation";
 };
 
 export function ChatArea({
-  contextCount,
-  hiddenExcludedCount,
-  hideExcluded,
   messages,
   onCollapse,
-  onExclude,
   onExpand,
   onHome,
-  onToggleHideExcluded,
   theme,
   toggleTheme,
   viewMode,
@@ -56,18 +46,6 @@ export function ChatArea({
           >
             Settings
           </button>
-          <div className="stat-pill rounded-md border px-2 py-1 text-xs">
-            {contextCount} in context
-          </div>
-          <button
-            className={`secondary-button h-8 rounded-md px-2 text-xs transition ${
-              hideExcluded ? "is-active" : ""
-            }`}
-            onClick={onToggleHideExcluded}
-            type="button"
-          >
-            {hideExcluded ? `Show Excluded${hiddenExcludedCount ? ` (${hiddenExcludedCount})` : ""}` : "Hide Excluded"}
-          </button>
           {settingsOpen ? (
             <div className="settings-popover settings-panel absolute right-0 top-10 z-10 w-48 rounded-lg border p-2 shadow-lg md:hidden">
               <div className="mb-2 text-xs font-medium text-[color:var(--muted)]">
@@ -88,7 +66,7 @@ export function ChatArea({
         {showHome ? (
           <EmptyChatState title="What are we working on?" />
         ) : showNewChat ? (
-          <EmptyChatState title="What are we working on?" />
+          <EmptyChatState title="New Chat" />
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-2.5">
             {messages.map((message) => (
@@ -96,7 +74,6 @@ export function ChatArea({
                 key={message.id}
                 message={message}
                 onCollapse={onCollapse}
-                onExclude={onExclude}
                 onExpand={onExpand}
               />
             ))}
