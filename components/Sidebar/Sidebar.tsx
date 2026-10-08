@@ -12,6 +12,8 @@ type SidebarProps = {
   setSearch: (value: string) => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
+  email: string;
+  onSignOut: () => void;
 };
 
 export function Sidebar({
@@ -25,6 +27,8 @@ export function Sidebar({
   setSearch,
   theme,
   toggleTheme,
+  email,
+  onSignOut,
 }: SidebarProps) {
   const [renamingConversationId, setRenamingConversationId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
@@ -122,6 +126,10 @@ export function Sidebar({
             </button>
           </div>
         ) : null}
+        <div className="flex items-center justify-between gap-2">
+          <span className="truncate text-xs text-[color:var(--muted)]" title={email}>{email}</span>
+          <button className="mini-button shrink-0" onClick={onSignOut} type="button">Sign out</button>
+        </div>
       </div>
       {renamingConversationId ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

@@ -22,6 +22,14 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Learn More
 
+## Supabase setup
+
+Copy `.env.example` to `.env.local` and set the Supabase project API URL, publishable key, and OpenAI key. The Supabase URL is `https://<project-ref>.supabase.co`; do not use the dashboard URL. The `NEXT_PUBLIC_` variables are public by design. Keep `OPENAI_API_KEY` server-only and never rename it with a `NEXT_PUBLIC_` prefix.
+
+Run `supabase/schema.sql` in the Supabase SQL Editor. It creates/updates the chat tables, enables email/password user-owned RLS policies, removes the prototype-wide anon policies, and installs database-backed chat request limits. Existing conversations created before authentication have no owner and are hidden; assign them to a user deliberately if they need to be retained.
+
+Email/password auth is enabled in Supabase by default. In **Authentication → URL Configuration**, set the site URL for local development and add the app origin to the redirect URL allowlist. For production email delivery, configure a custom SMTP provider. The chat API accepts 4 requests per user per minute and 30 per user per day, plus a shared project cap of 20 per minute and 120 per day; each response is capped at 700 output tokens.
+
 To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.

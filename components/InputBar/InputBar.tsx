@@ -1,10 +1,11 @@
 import { FormEvent, KeyboardEvent, useState } from "react";
 
 type InputBarProps = {
-  onSend: (content: string) => void;
+  isSending: boolean;
+  onSend: (content: string) => void | Promise<void>;
 };
 
-export function InputBar({ onSend }: InputBarProps) {
+export function InputBar({ isSending, onSend }: InputBarProps) {
   const [value, setValue] = useState("");
 
   function submit(event?: FormEvent) {
@@ -46,10 +47,10 @@ export function InputBar({ onSend }: InputBarProps) {
         />
         <button
           className="send-button h-9 rounded-lg px-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={!value.trim()}
+          disabled={!value.trim() || isSending}
           type="submit"
         >
-          Send
+          {isSending ? "Sending..." : "Send"}
         </button>
       </div>
     </form>
